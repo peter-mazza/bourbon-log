@@ -78,3 +78,63 @@ button, input, textarea {
 .bottle-name { flex: 1; font-weight: 600; }
 
 .bottle-rating { color: var(--accent); font-weight: 700; }
+
+.back-btn {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 15px;
+  padding: 4px 0;
+  margin-bottom: 12px;
+}
+
+.photos {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.photos img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.detail-fields { margin-bottom: 16px; }
+.detail-fields dt { font-size: 12px; color: #8a8074; margin-top: 10px; }
+.detail-fields dd { margin: 2px 0 0; font-size: 16px; }
+
+#detail-form label, #add-form label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #6b6255;
+}
+
+#detail-form input, #detail-form textarea,
+#add-form input, #add-form textarea {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+#detail-form button, #add-form button {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: white;
+  margin-top: 8px;
+  margin-right: 8px;
+}
+
+#add-form button#add-cancel {
+  background: white;
+  color: var(--accent);
+}
