@@ -2,6 +2,7 @@ import { fetchBottles, uploadPhotos, insertBottle, updateBottle } from './data.j
 import { renderListView } from './list-view.js';
 import { renderDetailView } from './detail-view.js';
 import { renderAddView } from './add-view.js';
+import { createImportQueue } from './import-queue.js';
 
 const listView = document.getElementById('list-view');
 const detailView = document.getElementById('detail-view');
@@ -9,6 +10,7 @@ const addView = document.getElementById('add-view');
 const navButtons = {
   list: document.getElementById('nav-list'),
   add: document.getElementById('nav-add'),
+  import: document.getElementById('nav-import'),
 };
 
 let bottles = [];
@@ -48,6 +50,38 @@ function openAdd(prefill) {
   });
   showView('add');
 }
+
+const importFileInput = document.getElementById('import-file-input');
+
+function stepImportQueue(queue) {
+  const entry = queue.current();
+  if (!entry) {
+    loadList();
+    return;
+  }
+  renderAddView(addView, {
+    prefill: { note: entry.text, finished_date: entry.date },
+    onCancel: () => { queue.advance(); stepImportQueue(queue); },
+    onSave: async (fields, photoFiles) => {
+      const photo_urls = photoFiles.length ? await uploadPhotos(photoFiles) : [];
+      await insertBottle({ ...fields, photo_urls });
+      queue.advance();
+      stepImportQueue(queue);
+    },
+  });
+  showView('add');
+}
+
+navButtons.import.addEventListener('click', () => importFileInput.click());
+
+importFileInput.addEventListener('change', async () => {
+  const file = importFileInput.files[0];
+  if (!file) return;
+  const text = await file.text();
+  const entries = JSON.parse(text);
+  importFileInput.value = '';
+  stepImportQueue(createImportQueue(entries));
+});
 
 navButtons.list.addEventListener('click', loadList);
 navButtons.add.addEventListener('click', () => openAdd());

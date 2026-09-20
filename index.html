@@ -12,6 +12,7 @@
     <nav>
       <button id="nav-list" class="nav-btn active">List</button>
       <button id="nav-add" class="nav-btn">Add</button>
+      <button id="nav-import" class="nav-btn">Import</button>
     </nav>
   </header>
 
@@ -20,6 +21,8 @@
     <section id="detail-view" hidden></section>
     <section id="add-view" hidden></section>
   </main>
+
+  <input type="file" id="import-file-input" accept="application/json" hidden />
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"
     integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP"
