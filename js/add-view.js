@@ -1,4 +1,4 @@
-import { clampRating } from './format.js';
+import { clampRating, escapeHtml } from './format.js';
 
 export function renderAddView(container, { prefill = {}, onSave, onCancel }) {
   const today = new Date().toISOString().slice(0, 10);
@@ -6,12 +6,12 @@ export function renderAddView(container, { prefill = {}, onSave, onCancel }) {
   container.innerHTML = `
     <form id="add-form">
       <label>Photos <input name="photos" type="file" accept="image/*" capture="environment" multiple /></label>
-      <label>Name <input name="name" value="${prefill.name ?? ''}" required /></label>
-      <label>Distillery <input name="distillery" value="${prefill.distillery ?? ''}" /></label>
+      <label>Name <input name="name" value="${escapeHtml(prefill.name ?? '')}" required /></label>
+      <label>Distillery <input name="distillery" value="${escapeHtml(prefill.distillery ?? '')}" /></label>
       <label>Proof <input name="proof" type="number" step="0.1" value="${prefill.proof ?? ''}" /></label>
       <label>Rating <input name="rating" type="number" min="0" max="10" step="0.1" value="${prefill.rating ?? ''}" /></label>
       <label>Finished <input name="finished_date" type="date" value="${prefill.finished_date ?? today}" /></label>
-      <label>Note <textarea name="note">${prefill.note ?? ''}</textarea></label>
+      <label>Note <textarea name="note">${escapeHtml(prefill.note ?? '')}</textarea></label>
       <button type="submit">Save</button>
       <button type="button" id="add-cancel">Cancel</button>
     </form>
