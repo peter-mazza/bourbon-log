@@ -1,4 +1,4 @@
-import { formatRating, firstPhotoUrl } from './format.js';
+import { formatRating, firstPhotoUrl, escapeHtml } from './format.js';
 
 export function renderListView(container, bottles, { onSelect }) {
   if (!bottles.length) {
@@ -9,9 +9,9 @@ export function renderListView(container, bottles, { onSelect }) {
   container.innerHTML = bottles.map(bottle => {
     const thumb = firstPhotoUrl(bottle.photo_urls);
     return `
-      <button class="bottle-row" data-id="${bottle.id}">
-        ${thumb ? `<img class="thumb" src="${thumb}" alt="" />` : '<span class="thumb thumb-empty"></span>'}
-        <span class="bottle-name">${bottle.name}</span>
+      <button class="bottle-row" data-id="${escapeHtml(bottle.id)}">
+        ${thumb ? `<img class="thumb" src="${escapeHtml(thumb)}" alt="" />` : '<span class="thumb thumb-empty"></span>'}
+        <span class="bottle-name">${escapeHtml(bottle.name)}</span>
         <span class="bottle-rating">${formatRating(bottle.rating)}</span>
       </button>
     `;

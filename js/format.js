@@ -12,3 +12,13 @@ export function formatRating(value) {
 export function firstPhotoUrl(photoUrls) {
   return Array.isArray(photoUrls) && photoUrls.length > 0 ? photoUrls[0] : null;
 }
+
+export function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[c]));
+}
