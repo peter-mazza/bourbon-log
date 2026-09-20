@@ -1,5 +1,15 @@
 import { formatRating, clampRating, escapeHtml } from './format.js';
 
+function showFormError(form, err) {
+  let errorEl = form.querySelector('.form-error');
+  if (!errorEl) {
+    errorEl = document.createElement('p');
+    errorEl.className = 'form-error';
+    form.appendChild(errorEl);
+  }
+  errorEl.textContent = `Save failed: ${err.message}`;
+}
+
 export function renderDetailView(container, bottle, { onBack, onSave }) {
   renderReadMode();
 
@@ -38,8 +48,10 @@ export function renderDetailView(container, bottle, { onBack, onSave }) {
         <label>Finished <input name="finished_date" type="date" value="${bottle.finished_date ?? ''}" /></label>
         <label>Note <textarea name="note">${escapeHtml(bottle.note ?? '')}</textarea></label>
         <button type="submit">Save</button>
+        <button type="button" id="detail-edit-cancel">Cancel</button>
       </form>
     `;
+    container.querySelector('#detail-edit-cancel').addEventListener('click', renderReadMode);
     container.querySelector('#detail-form').addEventListener('submit', async (event) => {
       event.preventDefault();
       const form = new FormData(event.target);
@@ -51,8 +63,15 @@ export function renderDetailView(container, bottle, { onBack, onSave }) {
         finished_date: form.get('finished_date') || null,
         note: form.get('note') || null,
       };
-      bottle = await onSave(bottle.id, fields);
-      renderReadMode();
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      try {
+        bottle = await onSave(bottle.id, fields);
+        renderReadMode();
+      } catch (err) {
+        submitBtn.disabled = false;
+        showFormError(event.target, err);
+      }
     });
   }
 }

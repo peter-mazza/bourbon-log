@@ -138,3 +138,17 @@ button, input, textarea {
   background: white;
   color: var(--accent);
 }
+
+.error-banner {
+  background: #fdd;
+  color: #900;
+  padding: 10px 16px;
+  border-bottom: 1px solid #c00;
+  cursor: pointer;
+}
+
+.form-error {
+  color: #900;
+  font-size: 13px;
+  margin-top: 8px;
+}

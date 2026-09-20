@@ -7,6 +7,15 @@ import { createImportQueue } from './import-queue.js';
 const listView = document.getElementById('list-view');
 const detailView = document.getElementById('detail-view');
 const addView = document.getElementById('add-view');
+const errorBanner = document.getElementById('error-banner');
+
+function showError(message) {
+  errorBanner.textContent = `${message} (tap to dismiss)`;
+  errorBanner.hidden = false;
+}
+
+errorBanner.addEventListener('click', () => { errorBanner.hidden = true; });
+
 const navButtons = {
   list: document.getElementById('nav-list'),
   add: document.getElementById('nav-add'),
@@ -24,15 +33,19 @@ function showView(name) {
 }
 
 async function loadList() {
-  bottles = await fetchBottles();
-  renderListView(listView, bottles, { onSelect: openDetail });
-  showView('list');
+  try {
+    bottles = await fetchBottles();
+    renderListView(listView, bottles, { onSelect: openDetail });
+    showView('list');
+  } catch (err) {
+    showError(`Couldn't load your bottles: ${err.message}`);
+  }
 }
 
 function openDetail(id) {
   const bottle = bottles.find(b => b.id === id);
   renderDetailView(detailView, bottle, {
-    onBack: () => showView('list'),
+    onBack: loadList,
     onSave: async (bottleId, fields) => await updateBottle(bottleId, fields),
   });
   showView('detail');
@@ -78,8 +91,15 @@ importFileInput.addEventListener('change', async () => {
   const file = importFileInput.files[0];
   if (!file) return;
   const text = await file.text();
-  const entries = JSON.parse(text);
   importFileInput.value = '';
+  let entries;
+  try {
+    entries = JSON.parse(text);
+    if (!Array.isArray(entries)) throw new Error('expected a JSON array');
+  } catch (err) {
+    showError(`Couldn't read that file: ${err.message}`);
+    return;
+  }
   stepImportQueue(createImportQueue(entries));
 });
 

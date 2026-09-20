@@ -13,6 +13,14 @@ export function firstPhotoUrl(photoUrls) {
   return Array.isArray(photoUrls) && photoUrls.length > 0 ? photoUrls[0] : null;
 }
 
+export function todayLocal() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 export function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;',

@@ -6,7 +6,8 @@ export async function fetchBottles() {
   const { data, error } = await client
     .from('bottles')
     .select('*')
-    .order('finished_date', { ascending: false, nullsFirst: false });
+    .order('finished_date', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false });
   if (error) throw error;
   return data;
 }
@@ -14,7 +15,8 @@ export async function fetchBottles() {
 export async function uploadPhotos(files) {
   const urls = [];
   for (const file of files) {
-    const path = `${crypto.randomUUID()}-${file.name}`;
+    const ext = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : '';
+    const path = `${crypto.randomUUID()}${ext}`;
     const { error } = await client.storage.from('bottle-photos').upload(path, file);
     if (error) throw error;
     const { data } = client.storage.from('bottle-photos').getPublicUrl(path);
