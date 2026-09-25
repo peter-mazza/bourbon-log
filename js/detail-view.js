@@ -37,10 +37,23 @@ export function renderDetailView(container, bottle, { onBack, onSave }) {
     container.querySelector('#detail-edit').addEventListener('click', renderEditMode);
   }
 
+  function editPhotosHtml() {
+    return (bottle.photo_urls ?? [])
+      .map(url => `
+        <div class="photo-item" data-url="${escapeHtml(url)}">
+          <img src="${escapeHtml(url)}" alt="" />
+          <button type="button" class="photo-remove" aria-label="Remove photo">&times;</button>
+        </div>`)
+      .join('');
+  }
+
   function renderEditMode() {
+    const removedUrls = new Set();
+
     container.innerHTML = `
-      <div class="photos">${photosHtml()}</div>
+      <div class="photos">${editPhotosHtml()}</div>
       <form id="detail-form">
+        <label>Add photos <input name="photos" type="file" accept="image/*" multiple /></label>
         <label>Name <input name="name" value="${escapeHtml(bottle.name ?? '')}" required /></label>
         <label>Distillery <input name="distillery" value="${escapeHtml(bottle.distillery ?? '')}" /></label>
         <label>Proof <input name="proof" type="number" step="0.1" value="${bottle.proof ?? ''}" /></label>
@@ -52,6 +65,17 @@ export function renderDetailView(container, bottle, { onBack, onSave }) {
       </form>
     `;
     container.querySelector('#detail-edit-cancel').addEventListener('click', renderReadMode);
+    container.querySelectorAll('.photo-item').forEach(item => {
+      const removeBtn = item.querySelector('.photo-remove');
+      removeBtn.addEventListener('click', () => {
+        const url = item.dataset.url;
+        const staged = !removedUrls.has(url);
+        if (staged) removedUrls.add(url); else removedUrls.delete(url);
+        item.classList.toggle('staged-remove', staged);
+        removeBtn.innerHTML = staged ? '&#8634;' : '&times;';
+        removeBtn.setAttribute('aria-label', staged ? 'Undo remove photo' : 'Remove photo');
+      });
+    });
     container.querySelector('#detail-form').addEventListener('submit', async (event) => {
       event.preventDefault();
       const form = new FormData(event.target);
@@ -63,10 +87,14 @@ export function renderDetailView(container, bottle, { onBack, onSave }) {
         finished_date: form.get('finished_date') || null,
         note: form.get('note') || null,
       };
+      const photoChanges = {
+        newFiles: Array.from(container.querySelector('[name="photos"]').files),
+        removedUrls: [...removedUrls],
+      };
       const submitBtn = event.target.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
       try {
-        bottle = await onSave(bottle.id, fields);
+        bottle = await onSave(bottle.id, fields, photoChanges);
         renderReadMode();
       } catch (err) {
         submitBtn.disabled = false;

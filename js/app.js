@@ -1,4 +1,4 @@
-import { fetchBottles, uploadPhotos, insertBottle, updateBottle } from './data.js';
+import { fetchBottles, uploadPhotos, deletePhotos, insertBottle, updateBottle } from './data.js';
 import { renderListView } from './list-view.js';
 import { renderDetailView } from './detail-view.js';
 import { renderAddView } from './add-view.js';
@@ -43,10 +43,21 @@ async function loadList() {
 }
 
 function openDetail(id) {
-  const bottle = bottles.find(b => b.id === id);
-  renderDetailView(detailView, bottle, {
+  let current = bottles.find(b => b.id === id);
+  renderDetailView(detailView, current, {
     onBack: loadList,
-    onSave: async (bottleId, fields) => await updateBottle(bottleId, fields),
+    onSave: async (bottleId, fields, { newFiles, removedUrls }) => {
+      const added = newFiles.length ? await uploadPhotos(newFiles) : [];
+      const kept = (current.photo_urls ?? []).filter(url => !removedUrls.includes(url));
+      try {
+        current = await updateBottle(bottleId, { ...fields, photo_urls: [...kept, ...added] });
+      } catch (err) {
+        await deletePhotos(added);
+        throw err;
+      }
+      await deletePhotos(removedUrls);
+      return current;
+    },
   });
   showView('detail');
 }

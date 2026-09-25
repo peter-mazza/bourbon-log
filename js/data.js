@@ -25,6 +25,17 @@ export async function uploadPhotos(files) {
   return urls;
 }
 
+export async function deletePhotos(urls) {
+  const marker = '/object/public/bottle-photos/';
+  const paths = urls
+    .map(url => url.split(marker)[1])
+    .filter(Boolean)
+    .map(decodeURIComponent);
+  if (!paths.length) return;
+  const { error } = await client.storage.from('bottle-photos').remove(paths);
+  if (error) console.error('Could not delete photo files from storage:', error);
+}
+
 export async function insertBottle(fields) {
   const { data, error } = await client.from('bottles').insert(fields).select().single();
   if (error) throw error;
