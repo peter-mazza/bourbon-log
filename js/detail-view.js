@@ -10,6 +10,17 @@ function showFormError(form, err) {
   errorEl.textContent = `Save failed: ${err.message}`;
 }
 
+function openLightbox(url) {
+  const overlay = document.createElement('div');
+  overlay.className = 'photo-lightbox';
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = '';
+  overlay.appendChild(img);
+  overlay.addEventListener('click', () => overlay.remove());
+  document.body.appendChild(overlay);
+}
+
 export function renderDetailView(container, bottle, { onBack, onSave }) {
   renderReadMode();
 
@@ -35,6 +46,9 @@ export function renderDetailView(container, bottle, { onBack, onSave }) {
     `;
     container.querySelector('#detail-back').addEventListener('click', onBack);
     container.querySelector('#detail-edit').addEventListener('click', renderEditMode);
+    container.querySelectorAll('.photos img').forEach(img => {
+      img.addEventListener('click', () => openLightbox(img.src));
+    });
   }
 
   function editPhotosHtml() {

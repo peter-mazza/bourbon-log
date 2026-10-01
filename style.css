@@ -175,3 +175,22 @@ button, input, textarea {
   line-height: 26px;
   text-align: center;
 }
+
+.photos > img { cursor: zoom-in; }
+
+.photo-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: zoom-out;
+}
+
+.photo-lightbox img {
+  max-width: 94vw;
+  max-height: 94vh;
+  object-fit: contain;
+}
