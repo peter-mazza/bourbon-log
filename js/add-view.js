@@ -15,7 +15,7 @@ export function renderAddView(container, { prefill = {}, onSave, onCancel }) {
 
   container.innerHTML = `
     <form id="add-form">
-      <label>Photos <input name="photos" type="file" accept="image/*" capture="environment" multiple /></label>
+      <label>Photos <input name="photos" type="file" accept="image/*" multiple /></label>
       <label>Name <input name="name" value="${escapeHtml(prefill.name ?? '')}" required /></label>
       <label>Distillery <input name="distillery" value="${escapeHtml(prefill.distillery ?? '')}" /></label>
       <label>Proof <input name="proof" type="number" step="0.1" value="${prefill.proof ?? ''}" /></label>
